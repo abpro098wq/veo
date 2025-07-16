@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veo Clone - AI Video Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary: #4285F4;
+            --primary-dark: #3367D6;
+            --secondary: #34A853;
+            --accent: #EA4335;
+            --dark: #202124;
+            --light: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f5f5;
+            color: var(--dark);
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+        }
+        
+        .video-placeholder {
+            background: linear-gradient(45deg, #e0e0e0 25%, #f5f5f5 25%, #f5f5f5 50%, #e0e0e0 50%, #e0e0e0 75%, #f5f5f5 75%, #f5f5f5 100%);
+            background-size: 20px 20px;
+        }
+        
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+        
+        .audio-wave {
+            display: flex;
+            justify-content: space-between;
+            width: 60px;
+            height: 40px;
+            gap: 3px;
+        }
+        
+        .audio-wave div {
+            background-color: #34A853;
+            height: 100%;
+            width: 5px;
+            border-radius: 3px;
+            animation: audio-wave 1.3s infinite ease-in-out;
+        }
+        
+        .audio-wave div:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+        
+        .audio-wave div:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+        
+        .audio-wave div:nth-child(3) {
+            animation-delay: 0.5s;
+        }
+        
+        .audio-wave div:nth-child(4) {
+            animation-delay: 0.7s;
+        }
+        
+        .audio-wave div:nth-child(5) {
+            animation-delay: 0.9s;
+        }
+        
+        @keyframes audio-wave {
+            0%, 100% {
+                transform: scaleY(0.3);
+            }
+            50% {
+                transform: scaleY(1);
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <img class="h-8 w-auto" src="https://placehold.co/100x30?text=Veo+Clone" alt="Veo Clone Logo">
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="#" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                    <a href="#" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Features</a>
+                    <a href="#" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Pricing</a>
+                    <button class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
+                        Try Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="gradient-bg text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-24">
+            <div class="text-center">
+                <h1 class="text-4xl md:text-5xl font-bold mb-6">AI-Powered Video Generation</h1>
+                <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
+                    Create stunning videos with synchronized audio using our advanced AI technology.
+                </p>
+                <div class="flex justify-center">
+                    <button class="bg-white text-blue-600 px-8 py-3 rounded-md font-medium hover:bg-gray-100 transition-colors">
+                        Generate Your First Video
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-6">
+                <!-- Video Preview -->
+                <div class="flex flex-col">
+                    <h2 class="text-2xl font-bold mb-4">Video Preview</h2>
+                    <div id="videoPreview" class="video-placeholder w-full aspect-video rounded-lg mb-4 flex items-center justify-center relative overflow-hidden">
+                        <div id="videoPlayer" class="hidden w-full h-full"></div>
+                        <div id="videoPlaceholderContent" class="text-center p-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                            <p class="text-gray-500">Your generated video will appear here</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Audio Controls -->
+                    <div id="audioControls" class="hidden bg-gray-50 p-4 rounded-lg mb-4">
+                        <h3 class="font-medium mb-2 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                            </svg>
+                            Generated Audio
+                        </h3>
+                        <div class="flex items-center justify-between">
+                            <div class="audio-wave">
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                            </div>
+                            <button id="playAudioBtn" class="bg-green-500 text-white p-2 rounded-full hover:bg-green-600 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                            <button id="stopAudioBtn" class="bg-gray-200 text-gray-700 p-2 rounded-full hover:bg-gray-300 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 012 0v2a1 1 0 01-2 0V9z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                            <button id="downloadAudioBtn" class="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Video Actions -->
+                    <div class="flex space-x-2">
+                        <button id="downloadVideoBtn" class="hidden bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            Download Video
+                        </button>
+                        <button id="shareVideoBtn" class="hidden bg-gray-200 text-gray-700 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-300 transition-colors flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                            </svg>
+                            Share
+                        </button>
+                        <button id="regenerateVideoBtn" class="hidden bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition-colors flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                            Regenerate
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Prompt Form -->
+                <div class="flex flex-col">
+                    <h2 class="text-2xl font-bold mb-4">Create Your Video</h2>
+                    <div class="mb-6">
+                        <label for="videoPrompt" class="block text-sm font-medium text-gray-700 mb-2">Describe your video</label>
+                        <textarea id="videoPrompt" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="A sunny beach with palm trees, gentle waves, and seagulls flying in the sky..."></textarea>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Video Style</label>
+                        <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                            <button class="style-option border border-gray-300 rounded-md p-2 hover:border-blue-500 transition-all" data-style="realistic">
+                                <div class="flex flex-col items-center">
+                                    <div class="w-12 h-12 bg-gradient-to-r from-blue-400 to-blue-600 rounded mb-1"></div>
+                                    <span class="text-xs">Realistic</span>
+                                </div>
+                            </button>
+                            <button class="style-option border border-gray-300 rounded-md p-2 hover:border-blue-500 transition-all" data-style="cartoon">
+                                <div class="flex flex-col items-center">
+                                    <div class="w-12 h-12 bg-gradient-to-r from-yellow-400 to-red-500 rounded mb-1"></div>
+                                    <span class="text-xs">Cartoon</span>
+                                </div>
+                            </button>
+                            <button class="style-option border border-gray-300 rounded-md p-2 hover:border-blue-500 transition-all" data-style="anime">
+                                <div class="flex flex-col items-center">
+                                    <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded mb-1"></div>
+                                    <span class="text-xs">Anime</span>
+                                </div>
+                            </button>
+                            <button class="style-option border border-gray-300 rounded-md p-2 hover:border-blue-500 transition-all" data-style="pixel">
+                                <div class="flex flex-col items-center">
+                                    <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-blue-500 rounded mb-1"></div>
+                                    <span class="text-xs">Pixel Art</span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Audio Options</label>
+                        <div class="space-y-2">
+                            <div class="flex items-center">
+                                <input id="addMusic" type="checkbox" checked class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                <label for="addMusic" class="ml-2 block text-sm text-gray-700">Background music</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input id="addSoundEffects" type="checkbox" checked class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                <label for="addSoundEffects" class="ml-2 block text-sm text-gray-700">Sound effects</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input id="addNarration" type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                <label for="addNarration" class="ml-2 block text-sm text-gray-700">AI narration</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label for="videoDuration" class="block text-sm font-medium text-gray-700 mb-2">Duration (seconds)</label>
+                        <select id="videoDuration" class="w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                            <option value="5">5 seconds</option>
+                            <option value="8" selected>8 seconds</option>
+                            <option value="15">15 seconds</option>
+                            <option value="30">30 seconds</option>
+                        </select>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <div class="text-sm text-gray-500">
+                            <span id="remainingCredits">3</span> credits remaining today
+                        </div>
+                        <button id="generateVideoBtn" class="bg-blue-600 text-white px-6 py-3 rounded-md font-medium hover:bg-blue-700 transition-colors flex items-center">
+                            <svg id="generateSpinner" class="hidden animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Generate Video
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Generated Videos Section -->
+        <div class="mt-16">
+            <h2 class="text-2xl font-bold mb-6">Recently Generated Videos</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="relative aspect-video">
+                        <img src="https://placehold.co/600x340" alt="AI generated video of a futuristic cityscape with flying cars and neon lights at night" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <button class="bg-blue-600 bg-opacity-80 text-white p-3 rounded-full hover:bg-opacity-100 transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-medium">Futuristic Cityscape</h3>
+                        <p class="text-sm text-gray-500 mt-1">"A cyberpunk city at night with neon lights and flying vehicles"</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="relative aspect-video">
+                        <img src="https://placehold.co/600x340" alt="AI generated video of a lush rainforest with waterfalls and colorful tropical birds" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <button class="bg-blue-600 bg-opacity-80 text-white p-3 rounded-full hover:bg-opacity-100 transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-medium">Tropical Rainforest</h3>
+                        <p class="text-sm text-gray-500 mt-1">"A dense rainforest with waterfalls, exotic plants and animals"</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="relative aspect-video">
+                        <img src="https://placehold.co/600x340" alt="AI generated video of an underwater coral reef with colorful fish and sea turtles" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <button class="bg-blue-600 bg-opacity-80 text-white p-3 rounded-full hover:bg-opacity-100 transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-medium">Underwater Paradise</h3>
+                        <p class="text-sm text-gray-500 mt-1">"A vibrant coral reef teeming with tropical fish and sea creatures"</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Veo Clone</h3>
+                    <p class="text-gray-400">Advanced AI video generation technology for creators and businesses.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Features</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Video Generation</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Audio Sync</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Custom Styles</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">API Access</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Resources</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Documentation</a></li>
+                        <li><a
