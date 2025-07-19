@@ -1,0 +1,14 @@
+{
+  "name": "veo-clone",
+  "version": "1.0.0",
+  "description": "AI-powered video generation application",
+  "main": "index.html",
+  "scripts": {
+    "build": "echo 'Build complete - static files ready for deployment'",
+    "start": "python3 -m http.server 8000",
+    "dev": "python3 -m http.server 8000"
+  },
+  "keywords": ["ai", "video", "generation"],
+  "author": "",
+  "license": "MIT"
+}
